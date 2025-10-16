@@ -8,3 +8,6 @@ edition = "2024"
 [[bin]]
 name = "tree_view_test"
 path = "src/main.rs"
+
+[lib]
+path = "src/tree_view.rs"

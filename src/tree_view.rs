@@ -1,13 +1,18 @@
-#![feature(allocator_api)]
+/*
+ * tree_view.rs - Library to view structures in a tree view.
+ *
+ * (C) 2020 Tim Gravert <tim.gravert@web.de>
+ *
+ * License: MIT OR Apache-2.0
+ *
+ */
 
-use std::alloc::{Allocator, Global};
-use std::collections::{BTreeMap};
-use std::fmt::Display;
+use std::fmt::{Display, Formatter, Result};
 
-const free: &str = "│   ";
-const node: &str = "├── ";
-const end: &str = "└── ";
-const empty: &str = "    ";
+const INDENT_FREE:  &str = "│   ";
+const INDENT_NODE:  &str = "├── ";
+const INDENT_END:   &str = "└── ";
+const INDENT_EMPTY: &str = "    ";
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Node {
@@ -19,25 +24,16 @@ pub trait ToNode {
     fn to_node(&self) -> Node;
 }
 
-#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Graph<T>
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct TreeView<T>
 where
-    T: ToNode
+    T: ToNode,
 {
     pub original: T,
     pub root: Node,
 }
 
-#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct TreeView<T>
-where
-    T: ToNode
-{
-    pub graph: Graph<T>,
-//    view: String, // TODO Caching
-//    tree_changed: bool, // TODO Caching
-}
-
+#[allow(unused)]
 impl Node {
     pub fn new() -> Self {
         Node {
@@ -52,43 +48,34 @@ impl Node {
             children: n.children,
         }
     }
-    
+
     pub fn insert(mut self, n: Node) {
         self.children.push(n);
     }
 
-    pub fn print_node(self, depth: u32, pre: &str) -> String {
-        let node_var: &str = self.node.as_str();
-        let mut output: String = format!("{pre}{node_var}\n");
+    pub fn print_node(self, pre: &str, first: bool, last: bool) -> String {
+        let node: &str = self.node.as_str();
         let n = self.children.len();
 
+        let mut output: String = String::from("");
+        let mut pre: String = String::from(pre);
+
+        if last {
+            output = format!("{pre}{INDENT_END}") + node + "\n";
+            pre = format!("{pre}{INDENT_EMPTY}");
+        } else if first {
+            output = output + node + "\n";
+        } else {
+            output = format!("{pre}{INDENT_NODE}") + node + "\n";
+            pre = format!("{pre}{INDENT_FREE}");
+        }
+
+        //output = output + &c.print_node(depth + 1, &format!("{pre}{node}"));
         for (i, c) in self.children.into_iter().enumerate() {
-            if i < n - 1 && depth == 0 {
-                output = output + &c.print_node(depth + 1, &format!("{pre}{node}"));
-            } else if i < n - 1 && depth > 0 {
-                //output = output + &c.print_node(depth + 1, gen_prefix(depth));
-            } else {
-                output = output + &c.print_node(depth + 1, &format!("{pre}{end}"));
-            }
+            output = output + &c.print_node(pre.as_str(), false, i == n - 1);
         }
 
         output
-    }
-}
-
-impl<T> Graph<T>
-where
-    T: Clone + Ord + ToNode,
-{
-    pub fn new(t: T) -> Self {
-        Graph {
-            original: t.clone(),
-            root: t.to_node(),
-        }
-    }
-
-    pub fn print(self) -> String {
-        self.root.print_node(0, "")
     }
 }
 
@@ -98,12 +85,22 @@ where
 {
     pub fn new(t: T) -> Self {
         TreeView {
-            graph: Graph::new(t),
+            original: t.clone(),
+            root: t.to_node(),
         }
     }
 
     pub fn print(self) -> String {
-        self.graph.print()
+        self.root.print_node("", true, false)
     }
 }
 
+impl<T> Display for TreeView<T>
+where
+    T: Clone + Ord + ToNode,
+{
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let output = self.root.clone().print_node("", true, false);
+        write!(f, "{}", output)
+    }
+}
