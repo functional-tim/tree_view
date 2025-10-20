@@ -12,6 +12,26 @@ A library which easily formats tree structures into a view. This can be the outp
 
 Tree structures just need to implement the trait TreeView.
 
+The trait TreeView has only one implementation of the function `fn to\_node(&self) -> Node`.
+
+An example implementation for the struct TestMap:
+
+```rust
+#derive[Eq, Ord, PartialEq, PartialOrd]
+pub struct TestMap {
+    pub key: String,
+    pub value: Vec<TestMap>,
+}
+
+impl ToTreeView for TestMap {
+    fn to_node(&self) -> Node {
+        node: self.key.clone(),
+        children: self.value.iter().map(|v| v.to_node()).collect(),
+    }
+}
+```
+
+
 ## How to install
 
 ### Using cargo
