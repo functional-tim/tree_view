@@ -9,9 +9,9 @@
 
 use std::fmt::{Display, Formatter, Result};
 
-const INDENT_FREE:  &str = "│   ";
-const INDENT_NODE:  &str = "├── ";
-const INDENT_END:   &str = "└── ";
+const INDENT_FREE: &str = "│   ";
+const INDENT_NODE: &str = "├── ";
+const INDENT_END: &str = "└── ";
 const INDENT_EMPTY: &str = "    ";
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -76,6 +76,12 @@ impl Node {
         }
 
         output
+    }
+}
+
+impl Default for Node {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
