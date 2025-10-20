@@ -12,7 +12,7 @@ A library which easily formats tree structures into a view. This can be the outp
 
 Tree structures just need to implement the trait TreeView.
 
-The trait TreeView has only one implementation of the function `fn to\_node(&self) -> Node`.
+The trait TreeView has only one implementation of the function `fn to_node(&self) -> Node`.
 
 An example implementation for the struct TestMap:
 
@@ -31,6 +31,21 @@ impl ToTreeView for TestMap {
 }
 ```
 
+Output of a TestMap:
+
+```bash
+Root
+├── Leaf1
+├── Node1
+│   ├── Leaf2
+│   └── Node2
+│       ├── Leaf3
+│       └── Leaf4
+├── Node3
+│   └── Leaf5
+└── Node4
+    └── Leaf6
+```
 
 ## How to install
 
