@@ -6,6 +6,12 @@
 
 -----------------------------------------------
 
+## What this is
+
+A library which easily formats tree structures into a view. This can be the output of an cli or part of a view in a tui.
+
+Tree structures just need to implement the trait TreeView.
+
 ## How to install
 
 ### Using cargo

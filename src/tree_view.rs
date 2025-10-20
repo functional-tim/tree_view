@@ -20,16 +20,16 @@ pub struct Node {
     pub children: Vec<Node>,
 }
 
-pub trait ToNode {
+pub trait ToTreeView {
     fn to_node(&self) -> Node;
 }
 
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct TreeView<T>
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct TreeView<'a, T>
 where
-    T: ToNode,
+    T: ToTreeView,
 {
-    pub original: T,
+    pub original: &'a T,
     pub root: Node,
 }
 
@@ -85,13 +85,13 @@ impl Default for Node {
     }
 }
 
-impl<T> TreeView<T>
+impl<'a, T> TreeView<'a, T>
 where
-    T: Clone + Ord + ToNode,
+    T: Ord + ToTreeView,
 {
-    pub fn new(t: T) -> Self {
+    pub fn new(t: &'a T) -> Self {
         TreeView {
-            original: t.clone(),
+            original: t,
             root: t.to_node(),
         }
     }
@@ -101,9 +101,9 @@ where
     }
 }
 
-impl<T> Display for TreeView<T>
+impl<T> Display for TreeView<'_, T>
 where
-    T: Clone + Ord + ToNode,
+    T: Ord + ToTreeView,
 {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let output = self.root.clone().print_node("", true, false);

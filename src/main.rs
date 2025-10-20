@@ -17,7 +17,7 @@ pub struct TestMap {
     pub value: Vec<TestMap>,
 }
 
-impl tree_view::ToNode for TestMap {
+impl tree_view::ToTreeView for TestMap {
     fn to_node(&self) -> tree_view::Node {
         tree_view::Node {
             node: self.key.clone(),
@@ -93,9 +93,9 @@ fn main() {
         ]),
     };
 
-    let view0: tree_view::TreeView<TestMap> = tree_view::TreeView::new(tree0.clone());
-    let view1: tree_view::TreeView<TestMap> = tree_view::TreeView::new(tree1.clone());
-    let view2: tree_view::TreeView<TestMap> = tree_view::TreeView::new(tree2.clone());
+    let view0: tree_view::TreeView<TestMap> = tree_view::TreeView::new(&tree0);
+    let view1: tree_view::TreeView<TestMap> = tree_view::TreeView::new(&tree1);
+    let view2: tree_view::TreeView<TestMap> = tree_view::TreeView::new(&tree2);
     println!("{:?}\n", tree0);
     println!("{}", view0);
     println!("{}", view1.print());
